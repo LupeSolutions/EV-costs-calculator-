@@ -5,307 +5,249 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EV Cost Calculator</title>
   <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #222;
+      --card: #fff;
+      --accent: #4CAF50;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #eee;
+      --card: #1e1e1e;
+      --accent: #81c784;
+    }
     body {
       font-family: Arial, sans-serif;
-      background: #f9fafb;
+      background: var(--bg);
+      color: var(--text);
       margin: 0;
-      padding: 20px;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
-    h1 {
+    header {
+      width: 100%;
       text-align: center;
-      color: #2c3e50;
+      padding: 1rem;
+      position: relative;
     }
-    .card {
-      background: white;
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .container {
+      background: var(--card);
+      padding: 1rem;
+      margin: 1rem;
       border-radius: 12px;
-      padding: 20px;
-      margin: 20px auto;
       max-width: 500px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: background 0.3s, color 0.3s;
+      width: 90%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
     }
     label {
-      font-weight: bold;
       display: block;
-      margin-top: 10px;
+      margin: 0.5rem 0 0.2rem;
     }
     input {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      padding: 0.5rem;
+      margin-bottom: 0.8rem;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 6px;
+      box-sizing: border-box;
     }
     button {
-      background: #3498db;
+      background: var(--accent);
       color: white;
+      padding: 0.6rem 1.2rem;
       border: none;
-      padding: 12px;
-      margin-top: 15px;
       border-radius: 8px;
-      width: 100%;
-      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
+      margin-top: 0.5rem;
     }
     button:hover {
-      background: #2980b9;
+      opacity: 0.9;
     }
     .result {
-      margin-top: 15px;
-      padding: 10px;
-      background: #ecf0f1;
-      border-radius: 8px;
-      white-space: pre-line;
-      transition: background 0.3s, color 0.3s;
+      margin-top: 0.5rem;
+      font-weight: bold;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      display: block;
     }
     th, td {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
       text-align: center;
     }
-    th {
-      background: #f0f0f0;
+    .coffee {
+      text-align: center;
+      margin: 2rem 0;
     }
-    .button-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .button-row button {
-      flex: 1;
-    }
-
-    /* Dark mode styles */
-    body.dark {
-      background: #1e1e1e;
-      color: #f0f0f0;
-    }
-    body.dark h1 {
-      color: #f9f9f9;
-    }
-    body.dark .card {
-      background: #2c2c2c;
-      color: #f0f0f0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    body.dark input {
-      background: #333;
-      border: 1px solid #555;
-      color: #eee;
-    }
-    body.dark .result {
-      background: #333;
-      color: #eee;
-    }
-    body.dark th {
-      background: #444;
-    }
-    #toggleDark {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #555;
-      border-radius: 50px;
-      padding: 8px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      color: white;
-    }
-    #toggleDark:hover {
-      background: #777;
+    .coffee img {
+      height: 60px;
+      width: 217px;
     }
   </style>
 </head>
 <body>
-  <button id="toggleDark">🌙 Dark Mode</button>
-  <h1>EV Cost Calculator</h1>
+  <header>
+    <h1>EV Cost Calculator</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  </header>
 
-  <!-- Battery Fill Section -->
-  <div class="card">
+  <!-- Battery Fill Cost -->
+  <div class="container">
     <h2>Battery Fill Cost</h2>
-    <label>Battery Size (kWh)</label>
+    <label>Battery Size (kWh):</label>
     <input type="number" id="batterySize" placeholder="e.g. 60">
-    
-    <label>Unit Rate (p/kWh)</label>
+    <label>Unit Rate (p/kWh):</label>
     <input type="number" id="unitRate" placeholder="e.g. 30">
-
-    <button onclick="calculateFill()">Calculate</button>
-    <div class="result" id="fillResult"></div>
+    <button onclick="calcFullCharge()">Calculate</button>
+    <div class="result" id="fullChargeResult"></div>
   </div>
 
-  <!-- Trip Cost Section -->
-  <div class="card">
-    <h2>Trip Cost</h2>
-    <label>Battery Size (kWh)</label>
-    <input type="number" id="tripBatterySize" placeholder="e.g. 60">
-
-    <label>Unit Rate (p/kWh)</label>
-    <input type="number" id="tripUnitRate" placeholder="e.g. 30">
-
-    <label>Start %</label>
-    <input type="number" id="startPercent" placeholder="e.g. 90">
-
-    <label>End %</label>
+  <!-- Journey Calculator -->
+  <div class="container">
+    <h2>Journey Cost Calculator</h2>
+    <label>Start %:</label>
+    <input type="number" id="startPercent" placeholder="e.g. 80">
+    <label>End %:</label>
     <input type="number" id="endPercent" placeholder="e.g. 20">
-
-    <label>Mileage (miles)</label>
+    <label>Mileage:</label>
     <input type="number" id="mileage" placeholder="e.g. 150">
-
-    <button onclick="calculateTrip()">Calculate</button>
-    <div class="result" id="tripResult"></div>
-  </div>
-
-  <!-- Trip Log -->
-  <div class="card">
-    <h2>Trip Log</h2>
-    <table id="tripTable">
+    <button onclick="calcJourney()">Calculate</button>
+    <div class="result" id="journeyResult"></div>
+    <button onclick="downloadLog()">Download Trip Log</button>
+    <table id="tripLog">
       <thead>
         <tr>
-          <th>Date</th>
+          <th>Start %</th>
+          <th>End %</th>
+          <th>Mileage</th>
           <th>Energy (kWh)</th>
           <th>Cost (£)</th>
           <th>Pence/mile</th>
-          <th>Miles</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
-    <div class="button-row">
-      <button onclick="downloadCSV()">Download CSV</button>
-      <button style="background:#e74c3c;" onclick="clearTrips()">Clear Log</button>
-    </div>
   </div>
 
-  <!-- Buy Me a Coffee Button -->
-  <div style="text-align:center; margin-top:30px;">
+  <!-- Buy Me a Coffee -->
+  <div class="coffee">
     <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
-      <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
-           alt="Buy Me A Coffee" 
-           style="height: 60px; width: 217px;">
+      <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
     </a>
   </div>
 
   <script>
-    function calculateFill() {
-      const batterySize = parseFloat(document.getElementById('batterySize').value);
-      const unitRate = parseFloat(document.getElementById('unitRate').value);
-
-      if (isNaN(batterySize) || isNaN(unitRate)) {
-        document.getElementById('fillResult').innerText = "Please enter valid numbers.";
-        return;
-      }
-
-      const cost = (batterySize * unitRate) / 100;
-      document.getElementById('fillResult').innerText = 
-        `Cost to fully charge: £${cost.toFixed(2)}`;
+    function toggleTheme() {
+      document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
     }
 
-    function calculateTrip() {
-      const batterySize = parseFloat(document.getElementById('tripBatterySize').value);
-      const unitRate = parseFloat(document.getElementById('tripUnitRate').value);
-      const startPercent = parseFloat(document.getElementById('startPercent').value);
-      const endPercent = parseFloat(document.getElementById('endPercent').value);
-      const mileage = parseFloat(document.getElementById('mileage').value);
+    function calcFullCharge() {
+      const battery = parseFloat(document.getElementById("batterySize").value);
+      const rate = parseFloat(document.getElementById("unitRate").value);
 
-      if ([batterySize, unitRate, startPercent, endPercent, mileage].some(isNaN)) {
-        document.getElementById('tripResult').innerText = "Please enter valid numbers.";
+      if (isNaN(battery) || isNaN(rate)) {
+        document.getElementById("fullChargeResult").textContent = "Please enter valid numbers.";
         return;
       }
 
-      const percentUsed = (startPercent - endPercent) / 100;
-      const energyUsed = batterySize * percentUsed;
-      const cost = (energyUsed * unitRate) / 100;
+      const cost = (battery * rate) / 100;
+      document.getElementById("fullChargeResult").textContent = `Full charge cost: £${cost.toFixed(2)}`;
+    }
+
+    function calcJourney() {
+      const battery = parseFloat(document.getElementById("batterySize").value);
+      const rate = parseFloat(document.getElementById("unitRate").value);
+      const start = parseFloat(document.getElementById("startPercent").value);
+      const end = parseFloat(document.getElementById("endPercent").value);
+      const mileage = parseFloat(document.getElementById("mileage").value);
+
+      if (isNaN(battery) || isNaN(rate) || isNaN(start) || isNaN(end) || isNaN(mileage)) {
+        document.getElementById("journeyResult").textContent = "Please fill all fields.";
+        return;
+      }
+
+      const usedPercent = (start - end) / 100;
+      if (usedPercent <= 0) {
+        document.getElementById("journeyResult").textContent = "End % must be less than Start %.";
+        return;
+      }
+
+      const energyUsed = battery * usedPercent;
+      const cost = (energyUsed * rate) / 100;
       const ppm = (cost * 100) / mileage;
 
-      const resultText = 
-        `Energy used: ${energyUsed.toFixed(2)} kWh\n` +
-        `Trip cost: £${cost.toFixed(2)}\n` +
-        `Pence per mile: ${ppm.toFixed(1)}p`;
+      document.getElementById("journeyResult").textContent = `Trip cost: £${cost.toFixed(2)}, ${ppm.toFixed(1)}p/mile`;
 
-      document.getElementById('tripResult').innerText = resultText;
+      // Log trip
+      const logRow = `<tr>
+        <td>${start}%</td>
+        <td>${end}%</td>
+        <td>${mileage}</td>
+        <td>${energyUsed.toFixed(2)}</td>
+        <td>£${cost.toFixed(2)}</td>
+        <td>${ppm.toFixed(1)}</td>
+      </tr>`;
+      document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
 
-      const trip = {
-        date: new Date().toLocaleDateString(),
-        energy: energyUsed.toFixed(2),
-        cost: cost.toFixed(2),
-        ppm: ppm.toFixed(1),
-        miles: mileage
-      };
-
-      saveTrip(trip);
-      renderTrips();
-    }
-
-    function saveTrip(trip) {
-      let trips = JSON.parse(localStorage.getItem("trips")) || [];
-      trips.push(trip);
+      // Save to localStorage
+      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+      trips.push({start, end, mileage, energyUsed, cost, ppm});
       localStorage.setItem("trips", JSON.stringify(trips));
     }
 
-    function renderTrips() {
-      let trips = JSON.parse(localStorage.getItem("trips")) || [];
-      const tbody = document.querySelector("#tripTable tbody");
-      tbody.innerHTML = "";
-      trips.forEach(t => {
-        let row = `<tr>
-          <td>${t.date}</td>
-          <td>${t.energy}</td>
-          <td>£${t.cost}</td>
-          <td>${t.ppm}p</td>
-          <td>${t.miles}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-      });
-    }
-
-    function downloadCSV() {
-      let trips = JSON.parse(localStorage.getItem("trips")) || [];
+    function downloadLog() {
+      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
       if (trips.length === 0) return;
 
-      let csv = "Date,Energy (kWh),Cost (£),Pence/mile,Miles\n";
+      let csv = "Start %,End %,Mileage,Energy (kWh),Cost (£),Pence/mile\n";
       trips.forEach(t => {
-        csv += `${t.date},${t.energy},${t.cost},${t.ppm},${t.miles}\n`;
+        csv += `${t.start},${t.end},${t.mileage},${t.energyUsed.toFixed(2)},${t.cost.toFixed(2)},${t.ppm.toFixed(1)}\n`;
       });
 
-      const blob = new Blob([csv], { type: "text/csv" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "ev_trip_log.csv";
-      link.click();
+      const blob = new Blob([csv], {type: "text/csv"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "trip_log.csv";
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
-    function clearTrips() {
-      if (confirm("Are you sure you want to clear all saved trips?")) {
-        localStorage.removeItem("trips");
-        renderTrips();
-      }
-    }
-
-    // Dark mode toggle
-    const toggleBtn = document.getElementById("toggleDark");
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      const darkMode = document.body.classList.contains("dark");
-      localStorage.setItem("darkMode", darkMode ? "enabled" : "disabled");
-      toggleBtn.innerText = darkMode ? "☀️ Light Mode" : "🌙 Dark Mode";
-    });
-
-    // Load preference
+    // Restore saved trips
     window.onload = () => {
-      if (localStorage.getItem("darkMode") === "enabled") {
-        document.body.classList.add("dark");
-        toggleBtn.innerText = "☀️ Light Mode";
-      }
-      renderTrips();
+      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+      trips.forEach(t => {
+        const logRow = `<tr>
+          <td>${t.start}%</td>
+          <td>${t.end}%</td>
+          <td>${t.mileage}</td>
+          <td>${t.energyUsed.toFixed(2)}</td>
+          <td>£${t.cost.toFixed(2)}</td>
+          <td>${t.ppm.toFixed(1)}</td>
+        </tr>`;
+        document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
+      });
     };
   </script>
 </body>
