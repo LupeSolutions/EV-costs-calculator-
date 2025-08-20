@@ -1,254 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EV Cost Calculator</title>
-  <style>
-    :root {
-      --bg: #f9f9f9;
-      --text: #222;
-      --card: #fff;
-      --accent: #4CAF50;
-    }
-    [data-theme="dark"] {
-      --bg: #121212;
-      --text: #eee;
-      --card: #1e1e1e;
-      --accent: #81c784;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    header {
-      width: 100%;
-      text-align: center;
-      padding: 1rem;
-      position: relative;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
-    .theme-toggle {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-    }
-    .container {
-      background: var(--card);
-      padding: 1rem;
-      margin: 1rem;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h2 {
-      margin-top: 0;
-    }
-    label {
-      display: block;
-      margin: 0.5rem 0 0.2rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    button {
-      background: var(--accent);
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .result {
-      margin-top: 0.5rem;
-      font-weight: bold;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      overflow-x: auto;
-      display: block;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: center;
-    }
-    .coffee {
-      text-align: center;
-      margin: 2rem 0;
-    }
-    .coffee img {
-      height: 60px;
-      width: 217px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Cost Calculator</title>
+<style>
+  :root {
+    --bg: #f9f9f9;
+    --text: #222;
+    --card: #fff;
+    --accent: #4CAF50;
+  }
+  [data-theme="dark"] {
+    --bg: #121212;
+    --text: #eee;
+    --card: #1e1e1e;
+    --accent: #81c784;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  header {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+  .theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+  .container {
+    background: var(--card);
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  h2 { margin-top: 0; }
+  label { display: block; margin: 0.5rem 0 0.2rem; }
+  input {
+    width: calc(100% - 80px);
+    padding: 0.5rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  .field-group { display: flex; gap: 10px; align-items: center; }
+  button {
+    background: var(--accent);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  button:hover { opacity: 0.9; }
+  .clear-btn { background:#e74c3c; padding:0.5rem; width:70px; }
+  .result { margin-top: 0.5rem; font-weight: bold; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    overflow-x: auto;
+    display: block;
+  }
+  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+  .coffee { text-align: center; margin: 2rem 0; }
+  .coffee img { height: 60px; width: 217px; }
+  .button-row { display:flex; gap:10px; margin-top:10px; flex-wrap: wrap; }
+  .button-row button { flex:1; min-width:120px; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>EV Cost Calculator</h1>
-    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-  </header>
+<header>
+  <h1>EV Cost Calculator</h1>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+</header>
 
-  <!-- Battery Fill Cost -->
-  <div class="container">
-    <h2>Battery Fill Cost</h2>
-    <label>Battery Size (kWh):</label>
-    <input type="number" id="batterySize" placeholder="e.g. 60">
-    <label>Unit Rate (p/kWh):</label>
-    <input type="number" id="unitRate" placeholder="e.g. 30">
-    <button onclick="calcFullCharge()">Calculate</button>
-    <div class="result" id="fullChargeResult"></div>
+<!-- Battery Fill Cost -->
+<div class="container">
+  <h2>Battery Fill Cost</h2>
+  <div class="field-group">
+    <input type="number" id="batterySize" placeholder="Battery Size (kWh)">
+    <button class="clear-btn" onclick="clearField('batterySize')">Clear</button>
   </div>
+  <div class="field-group">
+    <input type="number" id="unitRate" placeholder="Unit Rate (p/kWh)">
+    <button class="clear-btn" onclick="clearField('unitRate')">Clear</button>
+  </div>
+  <button onclick="calcFullCharge()">Calculate</button>
+  <div class="result" id="fullChargeResult"></div>
+</div>
 
-  <!-- Journey Calculator -->
-  <div class="container">
-    <h2>Journey Cost Calculator</h2>
-    <label>Start %:</label>
-    <input type="number" id="startPercent" placeholder="e.g. 80">
-    <label>End %:</label>
-    <input type="number" id="endPercent" placeholder="e.g. 20">
-    <label>Mileage:</label>
-    <input type="number" id="mileage" placeholder="e.g. 150">
-    <button onclick="calcJourney()">Calculate</button>
-    <div class="result" id="journeyResult"></div>
+<!-- Journey Calculator -->
+<div class="container">
+  <h2>Journey Cost Calculator</h2>
+  <label>Start %:</label>
+  <input type="number" id="startPercent" placeholder="e.g. 80">
+  <label>End %:</label>
+  <input type="number" id="endPercent" placeholder="e.g. 20">
+  <label>Mileage:</label>
+  <input type="number" id="mileage" placeholder="e.g. 150">
+  <button onclick="calcJourney()">Calculate</button>
+  <div class="result" id="journeyResult"></div>
+
+  <div class="button-row">
     <button onclick="downloadLog()">Download Trip Log</button>
-    <table id="tripLog">
-      <thead>
-        <tr>
-          <th>Start %</th>
-          <th>End %</th>
-          <th>Mileage</th>
-          <th>Energy (kWh)</th>
-          <th>Cost (£)</th>
-          <th>Pence/mile</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <button class="clear-btn" onclick="clearTripLog()">Clear Log</button>
   </div>
 
-  <!-- Buy Me a Coffee -->
-  <div class="coffee">
-    <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
-      <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
-    </a>
-  </div>
+  <table id="tripLog">
+    <thead>
+      <tr>
+        <th>Start %</th>
+        <th>End %</th>
+        <th>Mileage</th>
+        <th>Energy (kWh)</th>
+        <th>Cost (£)</th>
+        <th>Pence/mile</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <script>
-    function toggleTheme() {
-      document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
+<!-- Buy Me a Coffee -->
+<div class="coffee">
+  <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
+  </a>
+</div>
+
+<script>
+  function toggleTheme() {
+    document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
+    localStorage.setItem('theme', document.body.dataset.theme);
+  }
+
+  function clearField(id) {
+    document.getElementById(id).value = '';
+    localStorage.removeItem(id);
+  }
+
+  function calcFullCharge() {
+    const battery = parseFloat(document.getElementById("batterySize").value);
+    const rate = parseFloat(document.getElementById("unitRate").value);
+    if (isNaN(battery) || isNaN(rate)) {
+      document.getElementById("fullChargeResult").textContent = "Please enter valid numbers.";
+      return;
+    }
+    localStorage.setItem("batterySize", battery);
+    localStorage.setItem("unitRate", rate);
+
+    const cost = (battery * rate) / 100;
+    document.getElementById("fullChargeResult").textContent = `Full charge cost: £${cost.toFixed(2)}`;
+  }
+
+  function calcJourney() {
+    const battery = parseFloat(document.getElementById("batterySize").value);
+    const rate = parseFloat(document.getElementById("unitRate").value);
+    const start = parseFloat(document.getElementById("startPercent").value);
+    const end = parseFloat(document.getElementById("endPercent").value);
+    const mileage = parseFloat(document.getElementById("mileage").value);
+
+    if ([battery, rate, start, end, mileage].some(isNaN)) {
+      document.getElementById("journeyResult").textContent = "Please fill all fields.";
+      return;
     }
 
-    function calcFullCharge() {
-      const battery = parseFloat(document.getElementById("batterySize").value);
-      const rate = parseFloat(document.getElementById("unitRate").value);
-
-      if (isNaN(battery) || isNaN(rate)) {
-        document.getElementById("fullChargeResult").textContent = "Please enter valid numbers.";
-        return;
-      }
-
-      const cost = (battery * rate) / 100;
-      document.getElementById("fullChargeResult").textContent = `Full charge cost: £${cost.toFixed(2)}`;
+    const usedPercent = (start - end) / 100;
+    if (usedPercent <= 0) {
+      document.getElementById("journeyResult").textContent = "End % must be less than Start %.";
+      return;
     }
 
-    function calcJourney() {
-      const battery = parseFloat(document.getElementById("batterySize").value);
-      const rate = parseFloat(document.getElementById("unitRate").value);
-      const start = parseFloat(document.getElementById("startPercent").value);
-      const end = parseFloat(document.getElementById("endPercent").value);
-      const mileage = parseFloat(document.getElementById("mileage").value);
+    const energyUsed = battery * usedPercent;
+    const cost = (energyUsed * rate) / 100;
+    const ppm = (cost * 100) / mileage;
 
-      if (isNaN(battery) || isNaN(rate) || isNaN(start) || isNaN(end) || isNaN(mileage)) {
-        document.getElementById("journeyResult").textContent = "Please fill all fields.";
-        return;
-      }
+    document.getElementById("journeyResult").textContent = `Trip cost: £${cost.toFixed(2)}, ${ppm.toFixed(1)}p/mile`;
 
-      const usedPercent = (start - end) / 100;
-      if (usedPercent <= 0) {
-        document.getElementById("journeyResult").textContent = "End % must be less than Start %.";
-        return;
-      }
+    const logRow = `<tr>
+      <td>${start}%</td>
+      <td>${end}%</td>
+      <td>${mileage}</td>
+      <td>${energyUsed.toFixed(2)}</td>
+      <td>£${cost.toFixed(2)}</td>
+      <td>${ppm.toFixed(1)}</td>
+    </tr>`;
+    document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
 
-      const energyUsed = battery * usedPercent;
-      const cost = (energyUsed * rate) / 100;
-      const ppm = (cost * 100) / mileage;
+    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+    trips.push({start, end, mileage, energyUsed, cost, ppm});
+    localStorage.setItem("trips", JSON.stringify(trips));
+  }
 
-      document.getElementById("journeyResult").textContent = `Trip cost: £${cost.toFixed(2)}, ${ppm.toFixed(1)}p/mile`;
+  function downloadLog() {
+    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+    if (trips.length === 0) return;
 
-      // Log trip
+    let csv = "Start %,End %,Mileage,Energy (kWh),Cost (£),Pence/mile\n";
+    trips.forEach(t => {
+      csv += `${t.start},${t.end},${t.mileage},${t.energyUsed.toFixed(2)},${t.cost.toFixed(2)},${t.ppm.toFixed(1)}\n`;
+    });
+
+    const blob = new Blob([csv], {type: "text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "trip_log.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function clearTripLog() {
+    if(confirm("Are you sure you want to clear all saved trips?")) {
+      localStorage.removeItem("trips");
+      document.querySelector("#tripLog tbody").innerHTML = '';
+    }
+  }
+
+  window.onload = () => {
+    // Restore theme
+    const theme = localStorage.getItem("theme") || "light";
+    document.body.dataset.theme = theme;
+
+    // Restore battery/unit rate
+    const savedBattery = localStorage.getItem("batterySize");
+    const savedRate = localStorage.getItem("unitRate");
+    if (savedBattery) document.getElementById("batterySize").value = savedBattery;
+    if (savedRate) document.getElementById("unitRate").value = savedRate;
+
+    // Restore trip log
+    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+    trips.forEach(t => {
       const logRow = `<tr>
-        <td>${start}%</td>
-        <td>${end}%</td>
-        <td>${mileage}</td>
-        <td>${energyUsed.toFixed(2)}</td>
-        <td>£${cost.toFixed(2)}</td>
-        <td>${ppm.toFixed(1)}</td>
+        <td>${t.start}%</td>
+        <td>${t.end}%</td>
+        <td>${t.mileage}</td>
+        <td>${t.energyUsed.toFixed(2)}</td>
+        <td>£${t.cost.toFixed(2)}</td>
+        <td>${t.ppm.toFixed(1)}</td>
       </tr>`;
       document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
-
-      // Save to localStorage
-      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-      trips.push({start, end, mileage, energyUsed, cost, ppm});
-      localStorage.setItem("trips", JSON.stringify(trips));
-    }
-
-    function downloadLog() {
-      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-      if (trips.length === 0) return;
-
-      let csv = "Start %,End %,Mileage,Energy (kWh),Cost (£),Pence/mile\n";
-      trips.forEach(t => {
-        csv += `${t.start},${t.end},${t.mileage},${t.energyUsed.toFixed(2)},${t.cost.toFixed(2)},${t.ppm.toFixed(1)}\n`;
-      });
-
-      const blob = new Blob([csv], {type: "text/csv"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "trip_log.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // Restore saved trips
-    window.onload = () => {
-      const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-      trips.forEach(t => {
-        const logRow = `<tr>
-          <td>${t.start}%</td>
-          <td>${t.end}%</td>
-          <td>${t.mileage}</td>
-          <td>${t.energyUsed.toFixed(2)}</td>
-          <td>£${t.cost.toFixed(2)}</td>
-          <td>${t.ppm.toFixed(1)}</td>
-        </tr>`;
-        document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
-      });
-    };
-  </script>
+    });
+  };
+</script>
 </body>
 </html>
