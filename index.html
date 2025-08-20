@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV Cost Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #ecf0f1;
+      border-radius: 8px;
+      white-space: pre-line;
+      transition: background 0.3s, color 0.3s;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .button-row button {
+      flex: 1;
+    }
+
+    /* Dark mode styles */
+    body.dark {
+      background: #1e1e1e;
+      color: #f0f0f0;
+    }
+    body.dark h1 {
+      color: #f9f9f9;
+    }
+    body.dark .card {
+      background: #2c2c2c;
+      color: #f0f0f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    body.dark input {
+      background: #333;
+      border: 1px solid #555;
+      color: #eee;
+    }
+    body.dark .result {
+      background: #333;
+      color: #eee;
+    }
+    body.dark th {
+      background: #444;
+    }
+    #toggleDark {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #555;
+      border-radius: 50px;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      color: white;
+    }
+    #toggleDark:hover {
+      background: #777;
+    }
+  </style>
+</head>
+<body>
+  <button id="toggleDark">🌙 Dark Mode</button>
+  <h1>EV Cost Calculator</h1>
+
+  <!-- Battery Fill Section -->
+  <div class="card">
+    <h2>Battery Fill Cost</h2>
+    <label>Battery Size (kWh)</label>
+    <input type="number" id="batterySize" placeholder="e.g. 60">
+    
+    <label>Unit Rate (p/kWh)</label>
+    <input type="number" id="unitRate" placeholder="e.g. 30">
+
+    <button onclick="calculateFill()">Calculate</button>
+    <div class="result" id="fillResult"></div>
+  </div>
+
+  <!-- Trip Cost Section -->
+  <div class="card">
+    <h2>Trip Cost</h2>
+    <label>Battery Size (kWh)</label>
+    <input type="number" id="tripBatterySize" placeholder="e.g. 60">
+
+    <label>Unit Rate (p/kWh)</label>
+    <input type="number" id="tripUnitRate" placeholder="e.g. 30">
+
+    <label>Start %</label>
+    <input type="number" id="startPercent" placeholder="e.g. 90">
+
+    <label>End %</label>
+    <input type="number" id="endPercent" placeholder="e.g. 20">
+
+    <label>Mileage (miles)</label>
+    <input type="number" id="mileage" placeholder="e.g. 150">
+
+    <button onclick="calculateTrip()">Calculate</button>
+    <div class="result" id="tripResult"></div>
+  </div>
+
+  <!-- Trip Log -->
+  <div class="card">
+    <h2>Trip Log</h2>
+    <table id="tripTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Energy (kWh)</th>
+          <th>Cost (£)</th>
+          <th>Pence/mile</th>
+          <th>Miles</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="button-row">
+      <button onclick="downloadCSV()">Download CSV</button>
+      <button style="background:#e74c3c;" onclick="clearTrips()">Clear Log</button>
+    </div>
+  </div>
+
+  <!-- Buy Me a Coffee Button -->
+  <div style="text-align:center; margin-top:30px;">
+    <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
+      <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+           alt="Buy Me A Coffee" 
+           style="height: 60px; width: 217px;">
+    </a>
+  </div>
+
+  <script>
+    function calculateFill() {
+      const batterySize = parseFloat(document.getElementById('batterySize').value);
+      const unitRate = parseFloat(document.getElementById('unitRate').value);
+
+      if (isNaN(batterySize) || isNaN(unitRate)) {
+        document.getElementById('fillResult').innerText = "Please enter valid numbers.";
+        return;
+      }
+
+      const cost = (batterySize * unitRate) / 100;
+      document.getElementById('fillResult').innerText = 
+        `Cost to fully charge: £${cost.toFixed(2)}`;
+    }
+
+    function calculateTrip() {
+      const batterySize = parseFloat(document.getElementById('tripBatterySize').value);
+      const unitRate = parseFloat(document.getElementById('tripUnitRate').value);
+      const startPercent = parseFloat(document.getElementById('startPercent').value);
+      const endPercent = parseFloat(document.getElementById('endPercent').value);
+      const mileage = parseFloat(document.getElementById('mileage').value);
+
+      if ([batterySize, unitRate, startPercent, endPercent, mileage].some(isNaN)) {
+        document.getElementById('tripResult').innerText = "Please enter valid numbers.";
+        return;
+      }
+
+      const percentUsed = (startPercent - endPercent) / 100;
+      const energyUsed = batterySize * percentUsed;
+      const cost = (energyUsed * unitRate) / 100;
+      const ppm = (cost * 100) / mileage;
+
+      const resultText = 
+        `Energy used: ${energyUsed.toFixed(2)} kWh\n` +
+        `Trip cost: £${cost.toFixed(2)}\n` +
+        `Pence per mile: ${ppm.toFixed(1)}p`;
+
+      document.getElementById('tripResult').innerText = resultText;
+
+      const trip = {
+        date: new Date().toLocaleDateString(),
+        energy: energyUsed.toFixed(2),
+        cost: cost.toFixed(2),
+        ppm: ppm.toFixed(1),
+        miles: mileage
+      };
+
+      saveTrip(trip);
+      renderTrips();
+    }
+
+    function saveTrip(trip) {
+      let trips = JSON.parse(localStorage.getItem("trips")) || [];
+      trips.push(trip);
+      localStorage.setItem("trips", JSON.stringify(trips));
+    }
+
+    function renderTrips() {
+      let trips = JSON.parse(localStorage.getItem("trips")) || [];
+      const tbody = document.querySelector("#tripTable tbody");
+      tbody.innerHTML = "";
+      trips.forEach(t => {
+        let row = `<tr>
+          <td>${t.date}</td>
+          <td>${t.energy}</td>
+          <td>£${t.cost}</td>
+          <td>${t.ppm}p</td>
+          <td>${t.miles}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function downloadCSV() {
+      let trips = JSON.parse(localStorage.getItem("trips")) || [];
+      if (trips.length === 0) return;
+
+      let csv = "Date,Energy (kWh),Cost (£),Pence/mile,Miles\n";
+      trips.forEach(t => {
+        csv += `${t.date},${t.energy},${t.cost},${t.ppm},${t.miles}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "ev_trip_log.csv";
+      link.click();
+    }
+
+    function clearTrips() {
+      if (confirm("Are you sure you want to clear all saved trips?")) {
+        localStorage.removeItem("trips");
+        renderTrips();
+      }
+    }
+
+    // Dark mode toggle
+    const toggleBtn = document.getElementById("toggleDark");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const darkMode = document.body.classList.contains("dark");
+      localStorage.setItem("darkMode", darkMode ? "enabled" : "disabled");
+      toggleBtn.innerText = darkMode ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Load preference
+    window.onload = () => {
+      if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark");
+        toggleBtn.innerText = "☀️ Light Mode";
+      }
+      renderTrips();
+    };
+  </script>
+</body>
+</html>
