@@ -8,93 +8,93 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f4f4f9;
+      padding: 20px;
+      background-color: #f4f4f4;
       color: #333;
     }
     .dark-mode {
-      background: #121212;
-      color: #f4f4f9;
+      background-color: #121212;
+      color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
     }
     .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 500px;
+      margin: auto;
       background: #fff;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .dark-mode .container {
       background: #1e1e1e;
     }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-      text-align: center;
-    }
     label {
       display: block;
-      margin-top: 10px;
+      margin: 10px 0 5px;
     }
     input {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      padding: 10px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      box-sizing: border-box;
     }
     button {
-      margin-top: 15px;
-      padding: 10px;
-      border: none;
       background: #0077cc;
       color: white;
+      border: none;
+      padding: 10px 15px;
       border-radius: 8px;
       cursor: pointer;
-      width: 100%;
+      margin-top: 5px;
     }
     button:hover {
       background: #005fa3;
     }
-    .toggle-theme {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #444;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .result, .note {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .note {
-      font-size: 0.85rem;
-      color: #666;
-    }
-    .dark-mode .note {
-      color: #aaa;
-    }
-    #tripLog {
-      margin-top: 15px;
-      max-height: 200px;
-      overflow-y: auto;
+    .result {
+      margin: 10px 0;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #fafafa;
+      background: #e9f5ff;
+      border-left: 5px solid #0077cc;
+      border-radius: 6px;
     }
-    .dark-mode #tripLog {
+    .dark-mode .result {
       background: #2a2a2a;
-      border: 1px solid #444;
+      border-left-color: #3399ff;
+    }
+    .toggle-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .trip-log {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 8px;
+    }
+    .dark-mode .trip-log {
+      background: #2a2a2a;
     }
     .coffee {
       text-align: center;
-      margin-top: 25px;
+      margin-top: 20px;
+    }
+    .coffee a {
+      background: #ffdd00;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .coffee a:hover {
+      background: #ffcc00;
     }
   </style>
 
@@ -108,146 +108,161 @@
   </script>
 </head>
 <body>
-  <div class="toggle-theme" onclick="toggleTheme()">🌙/☀️</div>
-  <div class="container">
-    <h1>EV Cost Calculator</h1>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙/☀️</button>
+  <h1>EV Cost Calculator</h1>
 
+  <div class="container">
+    <!-- Full Charge Cost -->
     <h2>Full Charge Cost</h2>
-    <label>Battery Size (kWh): <input type="number" id="batterySize"></label>
-    <label>Unit Rate (p/kWh): <input type="number" id="unitRate"></label>
-    <button onclick="calculateFullCharge()">Calculate Full Charge</button>
+    <label for="batterySize">Battery Size (kWh):</label>
+    <input type="number" id="batterySize" placeholder="e.g. 60">
+    <label for="unitRate">Unit Rate (p/kWh):</label>
+    <input type="number" id="unitRate" placeholder="e.g. 30">
+    <button onclick="calculateFullCharge()">Calculate Full Charge Cost</button>
     <div id="fullChargeResult" class="result"></div>
     <button onclick="clearDefaults()">Clear Defaults</button>
 
+    <!-- Partial Charge Cost -->
     <h2>Partial Charge Cost</h2>
-    <label>Start %: <input type="number" id="startChargePercent"></label>
-    <label>End %: <input type="number" id="endChargePercent"></label>
-    <label>Unit Rate (p/kWh): <input type="number" id="partialUnitRate"></label>
-    <button onclick="calculatePartialCharge()">Calculate Partial Charge</button>
+    <label for="startChargePercent">Start %:</label>
+    <input type="number" id="startChargePercent" placeholder="e.g. 20">
+    <label for="endChargePercent">End %:</label>
+    <input type="number" id="endChargePercent" placeholder="e.g. 80">
+    <label for="partialUnitRate">Unit Rate for Partial Charge (p/kWh):</label>
+    <input type="number" id="partialUnitRate" placeholder="e.g. 35">
+    <button onclick="calculatePartialCharge()">Calculate Partial Charge Cost</button>
     <div id="partialChargeResult" class="result"></div>
+    <button onclick="clearPartialCharge()">Clear Partial Charge</button>
 
+    <!-- Trip Calculator -->
     <h2>Trip Cost Calculator</h2>
-    <label>Start %: <input type="number" id="tripStart"></label>
-    <label>End %: <input type="number" id="tripEnd"></label>
-    <label>Mileage: <input type="number" id="mileage"></label>
-    <button onclick="calculateTrip()">Calculate Trip</button>
+    <p><em>Note: Trip cost uses your Full Charge Unit Rate unless a Partial Charge is active.</em></p>
+    <label for="tripStartPercent">Trip Start %:</label>
+    <input type="number" id="tripStartPercent" placeholder="e.g. 100">
+    <label for="tripEndPercent">Trip End %:</label>
+    <input type="number" id="tripEndPercent" placeholder="e.g. 50">
+    <label for="mileage">Mileage:</label>
+    <input type="number" id="mileage" placeholder="e.g. 120">
+    <button onclick="calculateTrip()">Log Trip</button>
     <div id="tripResult" class="result"></div>
-    <p class="note">Note: Trip costs use the unit rate entered in the Full Charge section (and partial charge rate if logged).</p>
-    <h3>Trip Log</h3>
-    <div id="tripLog"></div>
-    <button onclick="clearLog()">Clear Trip Log</button>
 
-    <div class="coffee">
-      <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
-        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
-             alt="Buy Me A Coffee" 
-             style="height: 60px; width: 217px;">
-      </a>
+    <div class="trip-log">
+      <h3>Trip Log</h3>
+      <div id="tripLog"></div>
+      <button onclick="clearTripLog()">Clear Log</button>
     </div>
   </div>
 
+  <div class="coffee">
+    <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">☕ Buy me a coffee</a>
+  </div>
+
   <script>
-    // Dark/light mode
-    function toggleTheme() {
+    // Dark Mode Toggle
+    function toggleDarkMode() {
       document.body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
     }
-    window.onload = function() {
-      if(localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark-mode");
-      }
-      document.getElementById("batterySize").value = localStorage.getItem("batterySize") || "";
-      document.getElementById("unitRate").value = localStorage.getItem("unitRate") || "";
-      document.getElementById("startChargePercent").value = localStorage.getItem("startChargePercent") || "";
-      document.getElementById("endChargePercent").value = localStorage.getItem("endChargePercent") || "";
-      document.getElementById("partialUnitRate").value = localStorage.getItem("partialUnitRate") || "";
-      document.getElementById("tripLog").innerHTML = localStorage.getItem("tripLog") || "";
-    };
 
-    // Full charge calc
+    // Full Charge Cost
     function calculateFullCharge() {
-      const size = parseFloat(document.getElementById("batterySize").value);
-      const rate = parseFloat(document.getElementById("unitRate").value);
-      if(isNaN(size) || isNaN(rate)) {
-        alert("Enter valid values");
-        return;
-      }
-      localStorage.setItem("batterySize", size);
-      localStorage.setItem("unitRate", rate);
-      const cost = (size * rate / 100).toFixed(2);
-      document.getElementById("fullChargeResult").innerText = `Full charge cost: £${cost}`;
+      const batterySize = parseFloat(document.getElementById("batterySize").value);
+      const unitRate = parseFloat(document.getElementById("unitRate").value);
+
+      if (!batterySize || !unitRate) return;
+
+      const cost = (batterySize * (unitRate / 100)).toFixed(2);
+      document.getElementById("fullChargeResult").innerText =
+        `Cost of full charge: £${cost}`;
+
+      localStorage.setItem("batterySize", batterySize);
+      localStorage.setItem("unitRate", unitRate);
     }
 
-    // Partial charge calc
+    // Partial Charge Cost
     function calculatePartialCharge() {
-      const size = parseFloat(document.getElementById("batterySize").value);
       const start = parseFloat(document.getElementById("startChargePercent").value);
       const end = parseFloat(document.getElementById("endChargePercent").value);
-      const rate = parseFloat(document.getElementById("partialUnitRate").value);
-      if(isNaN(size) || isNaN(start) || isNaN(end) || isNaN(rate) || start >= end) {
-        alert("Enter valid values");
-        return;
-      }
+      const partialUnitRate = parseFloat(document.getElementById("partialUnitRate").value);
+      const batterySize = parseFloat(localStorage.getItem("batterySize") || 0);
+
+      if (!start || !end || !partialUnitRate || !batterySize || end <= start) return;
+
+      const addedKWh = batterySize * ((end - start) / 100);
+      const cost = (addedKWh * (partialUnitRate / 100)).toFixed(2);
+
+      document.getElementById("partialChargeResult").innerText =
+        `Cost of ${end - start}% top-up: £${cost}`;
+
       localStorage.setItem("startChargePercent", start);
       localStorage.setItem("endChargePercent", end);
-      localStorage.setItem("partialUnitRate", rate);
-      const kWhAdded = size * ((end - start) / 100);
-      const cost = (kWhAdded * rate / 100).toFixed(2);
-      document.getElementById("partialChargeResult").innerText = `Partial charge cost: £${cost}`;
+      localStorage.setItem("partialUnitRate", partialUnitRate);
     }
 
-    // Trip calc
+    // Trip Cost
     function calculateTrip() {
-      const size = parseFloat(localStorage.getItem("batterySize"));
-      const fullRate = parseFloat(localStorage.getItem("unitRate"));
-      const tripStart = parseFloat(document.getElementById("tripStart").value);
-      const tripEnd = parseFloat(document.getElementById("tripEnd").value);
+      const tripStart = parseFloat(document.getElementById("tripStartPercent").value);
+      const tripEnd = parseFloat(document.getElementById("tripEndPercent").value);
       const mileage = parseFloat(document.getElementById("mileage").value);
+      const batterySize = parseFloat(localStorage.getItem("batterySize") || 0);
+      const unitRate = parseFloat(localStorage.getItem("unitRate") || 0);
 
-      if(isNaN(size) || isNaN(fullRate) || isNaN(tripStart) || isNaN(tripEnd) || isNaN(mileage) || tripStart <= tripEnd) {
-        alert("Enter valid values");
-        return;
-      }
-
-      let totalCost = 0;
       const partialStart = parseFloat(localStorage.getItem("startChargePercent"));
       const partialEnd = parseFloat(localStorage.getItem("endChargePercent"));
-      const partialRate = parseFloat(localStorage.getItem("partialUnitRate"));
+      const partialUnitRate = parseFloat(localStorage.getItem("partialUnitRate"));
 
-      if(!isNaN(partialStart) && !isNaN(partialEnd) && !isNaN(partialRate)) {
-        // Part before partial charge
-        if(tripStart > partialStart) {
-          const percentDrop = Math.max(tripEnd, partialEnd) < partialStart ? (tripStart - tripEnd) : (tripStart - partialStart);
-          totalCost += (size * (percentDrop/100)) * (fullRate/100);
-        }
-        // Between partial charge
-        if(tripEnd < partialEnd && tripStart > partialStart) {
-          const percentDrop = partialEnd - Math.max(tripEnd, partialStart);
-          totalCost += (size * (percentDrop/100)) * (partialRate/100);
+      if (!tripStart || !tripEnd || !mileage || !batterySize || !unitRate || tripEnd >= tripStart) return;
+
+      let totalCost = 0;
+
+      if (partialStart && partialEnd && partialUnitRate) {
+        if (tripStart > partialStart) {
+          const prePartialPercent = Math.max(tripStart - partialStart, 0);
+          totalCost += (batterySize * (prePartialPercent / 100)) * (unitRate / 100);
+          totalCost += (batterySize * (partialEnd - tripEnd) / 100) * (partialUnitRate / 100);
+        } else {
+          totalCost += (batterySize * (tripStart - tripEnd) / 100) * (unitRate / 100);
         }
       } else {
-        // No partial charge
-        const percentDrop = tripStart - tripEnd;
-        totalCost = (size * (percentDrop/100)) * (fullRate/100);
+        totalCost += (batterySize * (tripStart - tripEnd) / 100) * (unitRate / 100);
       }
 
-      const ppm = (totalCost / mileage * 100).toFixed(2);
-      document.getElementById("tripResult").innerText = `Trip cost: £${totalCost.toFixed(2)} | ${ppm} p/mile`;
+      const ppm = ((totalCost * 100) / mileage).toFixed(2);
+      const date = new Date().toLocaleDateString();
 
-      const logEntry = `<p>Start: ${tripStart}%, End: ${tripEnd}%, Mileage: ${mileage}, Cost: £${totalCost.toFixed(2)}, ${ppm} p/mile</p>`;
-      document.getElementById("tripLog").innerHTML += logEntry;
-      localStorage.setItem("tripLog", document.getElementById("tripLog").innerHTML);
+      const tripEntry = {
+        date: date,
+        start: tripStart,
+        end: tripEnd,
+        mileage: mileage,
+        cost: totalCost.toFixed(2),
+        ppm: ppm
+      };
+
+      let trips = JSON.parse(localStorage.getItem("trips") || "[]");
+      trips.push(tripEntry);
+      localStorage.setItem("trips", JSON.stringify(trips));
+
+      displayTrips();
     }
 
-    // Clear trip log
-    function clearLog() {
-      if(confirm("Clear all trip logs?")) {
-        localStorage.removeItem("tripLog");
-        document.getElementById("tripLog").innerHTML = "";
-      }
+    function displayTrips() {
+      const tripLog = document.getElementById("tripLog");
+      let trips = JSON.parse(localStorage.getItem("trips") || "[]");
+      tripLog.innerHTML = trips.map(t =>
+        `<p><strong>Date:</strong> ${t.date}<br>
+         Start: ${t.start}% → End: ${t.end}%<br>
+         Mileage: ${t.mileage}<br>
+         Cost: £${t.cost}<br>
+         Pence per Mile: ${t.ppm}p</p>`
+      ).join("");
     }
 
-    // Clear defaults
+    // Clear Functions
+    function clearTripLog() {
+      localStorage.removeItem("trips");
+      document.getElementById("tripLog").innerHTML = "";
+    }
+
     function clearDefaults() {
       localStorage.removeItem("batterySize");
       localStorage.removeItem("unitRate");
@@ -260,11 +275,30 @@
       document.getElementById("startChargePercent").value = "";
       document.getElementById("endChargePercent").value = "";
       document.getElementById("partialUnitRate").value = "";
+      alert("Defaults cleared. You can now enter new values.");
+    }
 
-      document.getElementById("fullChargeResult").innerText = "";
+    function clearPartialCharge() {
+      localStorage.removeItem("startChargePercent");
+      localStorage.removeItem("endChargePercent");
+      localStorage.removeItem("partialUnitRate");
+
+      document.getElementById("startChargePercent").value = "";
+      document.getElementById("endChargePercent").value = "";
+      document.getElementById("partialUnitRate").value = "";
+
       document.getElementById("partialChargeResult").innerText = "";
+      alert("Partial charge details cleared.");
+    }
 
-      alert("Defaults cleared.");
+    // Load Saved Data
+    window.onload = () => {
+      if (localStorage.getItem("batterySize")) document.getElementById("batterySize").value = localStorage.getItem("batterySize");
+      if (localStorage.getItem("unitRate")) document.getElementById("unitRate").value = localStorage.getItem("unitRate");
+      if (localStorage.getItem("startChargePercent")) document.getElementById("startChargePercent").value = localStorage.getItem("startChargePercent");
+      if (localStorage.getItem("endChargePercent")) document.getElementById("endChargePercent").value = localStorage.getItem("endChargePercent");
+      if (localStorage.getItem("partialUnitRate")) document.getElementById("partialUnitRate").value = localStorage.getItem("partialUnitRate");
+      displayTrips();
     }
   </script>
 </body>
