@@ -1,299 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EV Cost Calculator</title>
-<style>
-  :root {
-    --bg: #f9f9f9;
-    --text: #222;
-    --card: #fff;
-    --accent: #4CAF50;
-  }
-  [data-theme="dark"] {
-    --bg: #121212;
-    --text: #eee;
-    --card: #1e1e1e;
-    --accent: #81c784;
-  }
-  body {
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-  }
-  header {
-    width: 100%;
-    text-align: center;
-    padding: 1rem;
-    position: relative;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 1.6rem;
-  }
-  .theme-toggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-  .container {
-    background: var(--card);
-    padding: 1rem;
-    margin: 1rem;
-    border-radius: 12px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  h2 { margin-top: 0; }
-  label { display: block; margin: 0.5rem 0 0.2rem; }
-  input {
-    width: calc(100% - 80px);
-    padding: 0.5rem;
-    margin-bottom: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-  }
-  .field-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  button {
-    background: var(--accent);
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 0.5rem;
-  }
-  button:hover { opacity: 0.9; }
-  .clear-btn { background:#e74c3c; padding:0.5rem; width:70px; }
-  .result { margin-top: 0.5rem; font-weight: bold; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    overflow-x: auto;
-    display: block;
-  }
-  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
-  .coffee { text-align: center; margin: 2rem 0; }
-  .coffee img { height: 60px; width: 217px; }
-  .button-row { display:flex; gap:10px; margin-top:10px; flex-wrap: wrap; }
-  .button-row button { flex:1; min-width:120px; }
-  .trip-note { font-size:0.8rem; color:gray; margin-top:0.3rem; }
-</style>
-  <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZ4ZBJTNNL"></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-GZ4ZBJTNNL'); </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV Cost Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f9;
+      color: #333;
+    }
+    .dark-mode {
+      background: #121212;
+      color: #f4f4f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .dark-mode .container {
+      background: #1e1e1e;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      border: none;
+      background: #0077cc;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .toggle-theme {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #444;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .result, .note {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .dark-mode .note {
+      color: #aaa;
+    }
+    #tripLog {
+      margin-top: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .dark-mode #tripLog {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+    .coffee {
+      text-align: center;
+      margin-top: 25px;
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZ4ZBJTNNL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GZ4ZBJTNNL');
+  </script>
 </head>
 <body>
-<header>
-  <h1>EV Cost Calculator</h1>
-  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-</header>
+  <div class="toggle-theme" onclick="toggleTheme()">🌙/☀️</div>
+  <div class="container">
+    <h1>EV Cost Calculator</h1>
 
-<!-- Battery Fill Cost -->
-<div class="container">
-  <h2>Battery Fill Cost</h2>
-  <div class="field-group">
-    <input type="number" id="batterySize" placeholder="Battery Size (kWh)">
-    <button class="clear-btn" onclick="clearField('batterySize')">Clear</button>
-  </div>
-  <div class="field-group">
-    <input type="number" id="unitRate" placeholder="Full Charge Unit Rate (p/kWh)">
-    <button class="clear-btn" onclick="clearField('unitRate')">Clear</button>
-  </div>
+    <h2>Full Charge Cost</h2>
+    <label>Battery Size (kWh): <input type="number" id="batterySize"></label>
+    <label>Unit Rate (p/kWh): <input type="number" id="unitRate"></label>
+    <button onclick="calculateFullCharge()">Calculate Full Charge</button>
+    <div id="fullChargeResult" class="result"></div>
+    <button onclick="clearDefaults()">Clear Defaults</button>
 
-  <!-- Partial Charge Inputs -->
-  <div style="margin-top:0.5rem; font-weight:bold;">Partial/Top-Up Charge (optional)</div>
-  <div class="field-group">
-    <input type="number" id="startChargePercent" placeholder="Start %">
-    <input type="number" id="endChargePercent" placeholder="End %">
-  </div>
-  <div class="field-group">
-    <input type="number" id="partialUnitRate" placeholder="Unit Rate (p/kWh)">
-  </div>
+    <h2>Partial Charge Cost</h2>
+    <label>Start %: <input type="number" id="startChargePercent"></label>
+    <label>End %: <input type="number" id="endChargePercent"></label>
+    <label>Unit Rate (p/kWh): <input type="number" id="partialUnitRate"></label>
+    <button onclick="calculatePartialCharge()">Calculate Partial Charge</button>
+    <div id="partialChargeResult" class="result"></div>
 
-  <button onclick="calcChargeCost()">Calculate</button>
-  <div class="result" id="fullChargeResult"></div>
-</div>
+    <h2>Trip Cost Calculator</h2>
+    <label>Start %: <input type="number" id="tripStart"></label>
+    <label>End %: <input type="number" id="tripEnd"></label>
+    <label>Mileage: <input type="number" id="mileage"></label>
+    <button onclick="calculateTrip()">Calculate Trip</button>
+    <div id="tripResult" class="result"></div>
+    <p class="note">Note: Trip costs use the unit rate entered in the Full Charge section (and partial charge rate if logged).</p>
+    <h3>Trip Log</h3>
+    <div id="tripLog"></div>
+    <button onclick="clearLog()">Clear Trip Log</button>
 
-<!-- Journey Calculator -->
-<div class="container">
-  <h2>Journey Cost Calculator</h2>
-  <label>Start %:</label>
-  <input type="number" id="startPercent" placeholder="e.g. 80">
-  <label>End %:</label>
-  <input type="number" id="endPercent" placeholder="e.g. 20">
-  <label>Mileage:</label>
-  <input type="number" id="mileage" placeholder="e.g. 150">
-  <div class="trip-note">*Trip costs are calculated using the unit rate entered in the Full Charge section.*</div>
-  <button onclick="calcJourney()">Calculate</button>
-  <div class="result" id="journeyResult"></div>
-
-  <div class="button-row">
-    <button onclick="downloadLog()">Download Trip Log</button>
-    <button class="clear-btn" onclick="clearTripLog()">Clear Log</button>
+    <div class="coffee">
+      <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
+        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+             alt="Buy Me A Coffee" 
+             style="height: 60px; width: 217px;">
+      </a>
+    </div>
   </div>
 
-  <table id="tripLog">
-    <thead>
-      <tr>
-        <th>Start %</th>
-        <th>End %</th>
-        <th>Mileage</th>
-        <th>Energy (kWh)</th>
-        <th>Cost (£)</th>
-        <th>Pence/mile</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<!-- Buy Me a Coffee -->
-<div class="coffee">
-  <a href="https://buymeacoffee.com/LupeSolutions" target="_blank">
-    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
-  </a>
-</div>
-
-<script>
-  function toggleTheme() {
-    document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
-    localStorage.setItem('theme', document.body.dataset.theme);
-  }
-
-  function clearField(id) {
-    document.getElementById(id).value = '';
-    localStorage.removeItem(id);
-  }
-
-  function calcChargeCost() {
-    const battery = parseFloat(document.getElementById("batterySize").value);
-    const fullRate = parseFloat(document.getElementById("unitRate").value);
-    const start = parseFloat(document.getElementById("startChargePercent").value);
-    const end = parseFloat(document.getElementById("endChargePercent").value);
-    const partialRateInput = parseFloat(document.getElementById("partialUnitRate").value);
-    const rate = !isNaN(partialRateInput) ? partialRateInput : fullRate;
-
-    if (isNaN(battery) || isNaN(fullRate)) {
-      document.getElementById("fullChargeResult").textContent = "Please enter valid battery size and full charge unit rate.";
-      return;
+  <script>
+    // Dark/light mode
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
     }
+    window.onload = function() {
+      if(localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+      document.getElementById("batterySize").value = localStorage.getItem("batterySize") || "";
+      document.getElementById("unitRate").value = localStorage.getItem("unitRate") || "";
+      document.getElementById("startChargePercent").value = localStorage.getItem("startChargePercent") || "";
+      document.getElementById("endChargePercent").value = localStorage.getItem("endChargePercent") || "";
+      document.getElementById("partialUnitRate").value = localStorage.getItem("partialUnitRate") || "";
+      document.getElementById("tripLog").innerHTML = localStorage.getItem("tripLog") || "";
+    };
 
-    localStorage.setItem("batterySize", battery);
-    localStorage.setItem("unitRate", fullRate);
-
-    let cost;
-    if (!isNaN(start) && !isNaN(end)) {
-      const usedPercent = (end - start) / 100;
-      if (usedPercent <= 0) {
-        document.getElementById("fullChargeResult").textContent = "End % must be greater than Start %.";
+    // Full charge calc
+    function calculateFullCharge() {
+      const size = parseFloat(document.getElementById("batterySize").value);
+      const rate = parseFloat(document.getElementById("unitRate").value);
+      if(isNaN(size) || isNaN(rate)) {
+        alert("Enter valid values");
         return;
       }
-      cost = (battery * usedPercent * rate) / 100;
-      document.getElementById("fullChargeResult").textContent =
-        `Charge cost from ${start}% → ${end}% at ${rate}p/kWh: £${cost.toFixed(2)}`;
-    } else {
-      cost = (battery * fullRate) / 100;
-      document.getElementById("fullChargeResult").textContent =
-        `Full charge cost: £${cost.toFixed(2)}`;
-    }
-  }
-
-  function calcJourney() {
-    const battery = parseFloat(document.getElementById("batterySize").value);
-    const rate = parseFloat(document.getElementById("unitRate").value);
-    const start = parseFloat(document.getElementById("startPercent").value);
-    const end = parseFloat(document.getElementById("endPercent").value);
-    const mileage = parseFloat(document.getElementById("mileage").value);
-
-    if ([battery, rate, start, end, mileage].some(isNaN)) {
-      document.getElementById("journeyResult").textContent = "Please fill all fields.";
-      return;
+      localStorage.setItem("batterySize", size);
+      localStorage.setItem("unitRate", rate);
+      const cost = (size * rate / 100).toFixed(2);
+      document.getElementById("fullChargeResult").innerText = `Full charge cost: £${cost}`;
     }
 
-    const usedPercent = (start - end) / 100;
-    if (usedPercent <= 0) {
-      document.getElementById("journeyResult").textContent = "End % must be less than Start %.";
-      return;
+    // Partial charge calc
+    function calculatePartialCharge() {
+      const size = parseFloat(document.getElementById("batterySize").value);
+      const start = parseFloat(document.getElementById("startChargePercent").value);
+      const end = parseFloat(document.getElementById("endChargePercent").value);
+      const rate = parseFloat(document.getElementById("partialUnitRate").value);
+      if(isNaN(size) || isNaN(start) || isNaN(end) || isNaN(rate) || start >= end) {
+        alert("Enter valid values");
+        return;
+      }
+      localStorage.setItem("startChargePercent", start);
+      localStorage.setItem("endChargePercent", end);
+      localStorage.setItem("partialUnitRate", rate);
+      const kWhAdded = size * ((end - start) / 100);
+      const cost = (kWhAdded * rate / 100).toFixed(2);
+      document.getElementById("partialChargeResult").innerText = `Partial charge cost: £${cost}`;
     }
 
-    const energyUsed = battery * usedPercent;
-    const cost = (energyUsed * rate) / 100;
-    const ppm = (cost * 100) / mileage;
+    // Trip calc
+    function calculateTrip() {
+      const size = parseFloat(localStorage.getItem("batterySize"));
+      const fullRate = parseFloat(localStorage.getItem("unitRate"));
+      const tripStart = parseFloat(document.getElementById("tripStart").value);
+      const tripEnd = parseFloat(document.getElementById("tripEnd").value);
+      const mileage = parseFloat(document.getElementById("mileage").value);
 
-    document.getElementById("journeyResult").textContent = `Trip cost: £${cost.toFixed(2)}, ${ppm.toFixed(1)}p/mile`;
+      if(isNaN(size) || isNaN(fullRate) || isNaN(tripStart) || isNaN(tripEnd) || isNaN(mileage) || tripStart <= tripEnd) {
+        alert("Enter valid values");
+        return;
+      }
 
-    const logRow = `<tr>
-      <td>${start}%</td>
-      <td>${end}%</td>
-      <td>${mileage}</td>
-      <td>${energyUsed.toFixed(2)}</td>
-      <td>£${cost.toFixed(2)}</td>
-      <td>${ppm.toFixed(1)}</td>
-    </tr>`;
-    document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
+      let totalCost = 0;
+      const partialStart = parseFloat(localStorage.getItem("startChargePercent"));
+      const partialEnd = parseFloat(localStorage.getItem("endChargePercent"));
+      const partialRate = parseFloat(localStorage.getItem("partialUnitRate"));
 
-    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-    trips.push({start, end, mileage, energyUsed, cost, ppm});
-    localStorage.setItem("trips", JSON.stringify(trips));
-  }
+      if(!isNaN(partialStart) && !isNaN(partialEnd) && !isNaN(partialRate)) {
+        // Part before partial charge
+        if(tripStart > partialStart) {
+          const percentDrop = Math.max(tripEnd, partialEnd) < partialStart ? (tripStart - tripEnd) : (tripStart - partialStart);
+          totalCost += (size * (percentDrop/100)) * (fullRate/100);
+        }
+        // Between partial charge
+        if(tripEnd < partialEnd && tripStart > partialStart) {
+          const percentDrop = partialEnd - Math.max(tripEnd, partialStart);
+          totalCost += (size * (percentDrop/100)) * (partialRate/100);
+        }
+      } else {
+        // No partial charge
+        const percentDrop = tripStart - tripEnd;
+        totalCost = (size * (percentDrop/100)) * (fullRate/100);
+      }
 
-  function downloadLog() {
-    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-    if (trips.length === 0) return;
+      const ppm = (totalCost / mileage * 100).toFixed(2);
+      document.getElementById("tripResult").innerText = `Trip cost: £${totalCost.toFixed(2)} | ${ppm} p/mile`;
 
-    let csv = "Start %,End %,Mileage,Energy (kWh),Cost (£),Pence/mile\n";
-    trips.forEach(t => {
-      csv += `${t.start},${t.end},${t.mileage},${t.energyUsed.toFixed(2)},${t.cost.toFixed(2)},${t.ppm.toFixed(1)}\n`;
-    });
-
-    const blob = new Blob([csv], {type: "text/csv"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "trip_log.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function clearTripLog() {
-    if(confirm("Are you sure you want to clear all saved trips?")) {
-      localStorage.removeItem("trips");
-      document.querySelector("#tripLog tbody").innerHTML = '';
+      const logEntry = `<p>Start: ${tripStart}%, End: ${tripEnd}%, Mileage: ${mileage}, Cost: £${totalCost.toFixed(2)}, ${ppm} p/mile</p>`;
+      document.getElementById("tripLog").innerHTML += logEntry;
+      localStorage.setItem("tripLog", document.getElementById("tripLog").innerHTML);
     }
-  }
 
-  window.onload = () => {
-    const theme = localStorage.getItem("theme") || "light";
-    document.body.dataset.theme = theme;
+    // Clear trip log
+    function clearLog() {
+      if(confirm("Clear all trip logs?")) {
+        localStorage.removeItem("tripLog");
+        document.getElementById("tripLog").innerHTML = "";
+      }
+    }
 
-    const savedBattery = localStorage.getItem("batterySize");
-    const savedRate = localStorage.getItem("unitRate");
-    if (savedBattery) document.getElementById("batterySize").value = savedBattery;
-    if (savedRate) document.getElementById("unitRate").value = savedRate;
+    // Clear defaults
+    function clearDefaults() {
+      localStorage.removeItem("batterySize");
+      localStorage.removeItem("unitRate");
+      localStorage.removeItem("startChargePercent");
+      localStorage.removeItem("endChargePercent");
+      localStorage.removeItem("partialUnitRate");
 
-    const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-    trips.forEach(t => {
-      const logRow = `<tr>
-        <td>${t.start}%</td>
-        <td>${t.end}%</td>
-        <td>${t.mileage}</td>
-        <td>${t.energyUsed.toFixed(2)}</td>
-        <td>£${t.cost.toFixed(2)}</td>
-        <td>${t.ppm.toFixed(1)}</td>
-      </tr>`;
-      document.querySelector("#tripLog tbody").insertAdjacentHTML("beforeend", logRow);
-    });
-  };
-</script>
+      document.getElementById("batterySize").value = "";
+      document.getElementById("unitRate").value = "";
+      document.getElementById("startChargePercent").value = "";
+      document.getElementById("endChargePercent").value = "";
+      document.getElementById("partialUnitRate").value = "";
+
+      document.getElementById("fullChargeResult").innerText = "";
+      document.getElementById("partialChargeResult").innerText = "";
+
+      alert("Defaults cleared.");
+    }
+  </script>
 </body>
 </html>
